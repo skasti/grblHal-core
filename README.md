@@ -1,5 +1,7 @@
 ## grblHAL ##
 
+Small modifications for Flexi-HAL
+
 __New:__ A web app for [building for some drivers](http://svn.io-engineering.com:8080/) is now available, feedback will be appreciated.
 
 grblHAL has [many extensions](https://github.com/grblHAL/core/wiki) that may cause issues with some senders. As a workaround for these a [compile time option](https://github.com/grblHAL/core/wiki/Changes-from-grbl-1.1#workaround) has been added that disables extensions selectively. 
