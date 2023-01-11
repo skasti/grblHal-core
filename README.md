@@ -1,6 +1,6 @@
 ## grblHAL ##
 
-Small modifications for Flexi-HAL to enable inspection light.  All core config now done through platformio.ini in the driver.
+Small Updates for Flexi-HAL to enable inspection light.  All core config now done through platformio.ini in the driver.
 
 __New:__ A web app for [building for some drivers](http://svn.io-engineering.com:8080/) is now available, feedback will be appreciated.
 
