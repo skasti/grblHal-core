@@ -1775,7 +1775,11 @@ static uint32_t get_int (setting_id_t id)
 #endif
 
         case Setting_UnlockAfterEStop:
-            value = settings.flags.no_unlock_after_estop ? 0 : 1;
+            value = settings.flags.no_unlock_after_estop;
+            if(value)
+                value = 0;
+            else
+                value = 1;
             break;
 
         case Setting_OffsetLock:
