@@ -160,11 +160,6 @@
     probe_relay_init();
 #endif
 
-#if PROBE_PROTECT_ENABLE
-    extern void probe_protect_init (void);
-    probe_protect_init();
-#endif
-
 #if DISPLAY_ENABLE
     void display_init (void);
     display_init();
