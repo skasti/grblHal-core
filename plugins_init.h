@@ -45,7 +45,7 @@
 
 #if SPINDLE_ENABLE & (1<<SPINDLE_PWM0_CLONE)
     extern void cloned_spindle_init (void);
-    cloned_spindle_init();
+    //cloned_spindle_init();
 #endif
 
 #if SPINDLE_ENABLE & (1<<SPINDLE_STEPPER)
@@ -55,7 +55,7 @@
 
 #if SPINDLE_ENABLE & ((1<<SPINDLE_ONOFF1)|(1<<SPINDLE_ONOFF1_DIR))
     extern void onoff_spindle_init (void);
-    onoff_spindle_init();
+    //onoff_spindle_init();
 #endif
 
 #if SPINDLE_ENABLE & (1<<SPINDLE_PWM2)
