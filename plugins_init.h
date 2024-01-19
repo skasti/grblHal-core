@@ -48,7 +48,7 @@
     //cloned_spindle_init();
 #endif
 
-#if SPINDLE_ENABLE & (1<<SPINDLE_STEPPER)
+#if (SPINDLE_ENABLE & (1<<SPINDLE_STEPPER)) && N_AXIS>3
     extern void stepper_spindle_init (void);
     stepper_spindle_init();
 #endif
