@@ -286,7 +286,7 @@
 #endif
 
 // Driver spindle 1
-
+#if (!BOARD_FLEXI_HAL)
 #if SPINDLE_ENABLE & ((1<<SPINDLE_PWM1)|(1<<SPINDLE_PWM1_NODIR)|(1<<SPINDLE_ONOFF1)|(1<<SPINDLE_ONOFF1_DIR))
 #define DRIVER_SPINDLE1_ENABLE       1
 #else
@@ -308,6 +308,11 @@
 #define DRIVER_SPINDLE1_NAME "Basic2"
 #endif
 #endif
+#else//flexihal exception as we want all drivers enabled, but not always spindle1 as PWM.
+#define DRIVER_SPINDLE1_ENABLE       0
+#define DRIVER_SPINDLE1_DIR_ENABLE   0
+#define DRIVER_SPINDLE1_PWM_ENABLE   0
+#endif//flexihal exception
 
 //
 
