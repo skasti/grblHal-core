@@ -125,6 +125,9 @@
 
     extern void my_plugin_init (void);
     my_plugin_init();
+	
+	extern void persistent_tool_init (void);
+	persistent_tool_init();
 
 #if N_SPINDLE > 1
     extern void spindle_select_init(void);
