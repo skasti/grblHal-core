@@ -2052,7 +2052,7 @@ static bool is_setting_available (const setting_detail_t *setting)
             break;
 
         case Setting_DoorSpindleOnDelay:
-            available = hal.signals_cap.safety_door_ajar && spindle_get_count() && !spindle_get_caps(true).at_speed;
+            available = hal.signals_cap.safety_door_ajar && spindle_get_count() && spindle_get_caps(true).at_speed;
             break;
 
         case Setting_DoorCoolantOnDelay:
@@ -2065,7 +2065,7 @@ static bool is_setting_available (const setting_detail_t *setting)
             break;
 
         case Setting_SpindleOnDelay:
-            available = !hal.signals_cap.safety_door_ajar && spindle_get_count() && !spindle_get_caps(true).at_speed;
+            available = !hal.signals_cap.safety_door_ajar && spindle_get_count() && spindle_get_caps(true).at_speed;
             break;
 
         case Setting_AutoReportInterval:
