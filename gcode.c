@@ -813,8 +813,7 @@ char *gc_normalize_block (char *block, char **message)
 // In this function, all units and positions are converted and exported to internal functions
 // in terms of (mm, mm/min) and absolute machine coordinates, respectively.
 
-status_code_t gc_execute_block (char *block)
-{
+status_code_t gc_execute_block (char *block) {
     static const parameter_words_t axis_words_mask = {
         .x = On,
         .y = On,
@@ -3716,12 +3715,21 @@ status_code_t gc_execute_block (char *block)
 #endif
 
                 status_code_t status = grbl.on_macro_execute((macro_id_t)gc_block.values.p);
-
-#if NGC_PARAMETERS_ENABLE
-                if(status != Status_Handled)
+                // If none of the handles return Status_OK, we need to pop the call stack
+                if (status != Status_Handled) {
                     ngc_call_pop();
-#endif
-                return status == Status_Unhandled ? Status_GcodeValueOutOfRange : (status == Status_Handled ? Status_OK : status);
+                }
+
+                switch (status) {
+                    case Status_Handled:
+                        return Status_OK;
+
+                    case Status_Unhandled:
+                        return Status_GcodeValueOutOfRange;
+
+                    default:
+                        return status;
+                }
             }
             break;
 
