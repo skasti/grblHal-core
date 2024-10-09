@@ -115,8 +115,7 @@ typedef enum {
 
     Status_Handled,   // For internal use only
     Status_Unhandled, // For internal use only
-    Status_Handled, // For internal use only
-    Status_StatusMax = Status_Handled
+    Status_StatusMax = Status_Unhandled
 } __attribute__ ((__packed__)) status_code_t;
 
 typedef struct {
