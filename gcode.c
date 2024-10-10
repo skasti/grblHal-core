@@ -1113,7 +1113,7 @@ status_code_t gc_execute_block (char *block) {
                 return Status_OK;
             float register_id;
             if (block[char_counter] == '[') {
-                if (!ngc_eval_expression(block, &char_counter, &register_id)) {
+                if (ngc_eval_expression(block, &char_counter, &register_id) != Status_OK) {
                     FAIL(Status_ExpressionSyntaxError);   // [Invalid expression syntax]
                 }
             } else if (!read_float(block, &char_counter, &register_id)) {
@@ -1126,7 +1126,6 @@ status_code_t gc_execute_block (char *block) {
 
             char *strValue;
             substitute_parameters(&block[char_counter++], &strValue);
-            report_message(strValue, Message_Debug);
 
             if (!string_register_set((string_register_id_t)register_id, strValue)) {
                 free(strValue);
