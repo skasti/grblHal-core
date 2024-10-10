@@ -628,7 +628,7 @@ static void substitute_parameters (char *comment, char **message)
             // Reset format
             format = NULL;
 #if STRING_REGISTERS_ENABLE
-        } else if (c == '@') {
+        } else if (c == '&') {
             if(read_parameter(comment, &char_counter, &value) == Status_OK) {
                 if (string_register_get((string_register_id_t)value, &strValue)) {
                     len += strlen(strValue);
@@ -674,7 +674,7 @@ static void substitute_parameters (char *comment, char **message)
                     strcat(s, "N/A");
                 s = strchr(s, '\0');
 #if STRING_REGISTERS_ENABLE
-            } else if (c == '@') {
+            } else if (c == '&') {
                 if(read_parameter(comment, &char_counter, &value) == Status_OK) {
                     if (string_register_get((string_register_id_t)value, &strValue)) {
                         strcat(s, strValue);
@@ -767,9 +767,9 @@ char *gc_normalize_block (char *block, char **message)
         block++;
 
 #if STRING_REGISTERS_ENABLE
-    // If the block starts with '@' it means it is setting a string register value,
+    // If the block starts with '&' it means it is setting a string register value,
     // and we should not normalize it
-    if(*block == '@') {
+    if(*block == '&') {
         return block;
     }
 #endif
@@ -1108,7 +1108,7 @@ status_code_t gc_execute_block (char *block) {
 
             continue;
 #if STRING_REGISTERS_ENABLE
-        } else if (letter == '@') {
+        } else if (letter == '&') {
             if(gc_state.skip_blocks)
                 return Status_OK;
             float register_id;
