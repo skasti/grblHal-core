@@ -599,6 +599,7 @@ static void substitute_parameters (char *comment, char **message)
     uint_fast8_t char_counter = 0;
     int8_t parse_format = 0;
     uint8_t decimals = ngc_float_decimals(); // LinuxCNC is 1 (or l?)
+    uint8_t *format = NULL;
 
 #if STRING_REGISTERS_ENABLE
     char *strValue;
@@ -614,15 +615,18 @@ static void substitute_parameters (char *comment, char **message)
             if((parse_format = get_format(c, parse_format, &decimals)) < 0) {
                 len -= parse_format;
                 parse_format = 0;
+                format = &decimals;
             }
         } else if(c == '%')
             parse_format = 1;
         else if(c == '#') {
             char_counter--;
             if(read_parameter(comment, &char_counter, &value) == Status_OK)
-                len += strlen(decimals ? ftoa(value, decimals) : trim_float(ftoa(value, decimals)));
+                len += strlen(format ? ftoa(value, *format) : trim_float(ftoa(value, ngc_float_decimals())));
             else
                 len += 3; // "N/A"
+            // Reset format
+            format = NULL;
 #if STRING_REGISTERS_ENABLE
         } else if (c == '@') {
             if(read_parameter(comment, &char_counter, &value) == Status_OK) {
