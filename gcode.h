@@ -249,6 +249,7 @@ typedef enum {
     LaserPPI_PulseLength = 128,         //!< 128 - M128
     RGB_WriteLEDs = 150,                //!< 150 - M150, Marlin format
     OpenPNP_SetAcceleration = 204,      //!< 204 - M204
+    SetFeedOverrides = 220,             //!< 220 - M220, Marlin format
     PWMServo_SetPosition= 280,          //!< 280 - M280, Marlin format
     RGB_Inspection_Light = 356,         //!< 356 - M356
     OpenPNP_FinishMoves = 400,          //!< 400 - M400
@@ -655,7 +656,7 @@ typedef struct {
 // Initialize the parser
 void gc_init (void);
 
-char *gc_normalize_block (char *block, char **message);
+char *gc_normalize_block (char *block, status_code_t *status, char **message);
 
 // Execute one block of rs275/ngc/g-code
 status_code_t gc_execute_block (char *block);

@@ -1,22 +1,117 @@
 ## grblHAL changelog
 
+<a name="20241113">Build 20241113
+
+Core:
+
+* Added basic core support for toolsetter probe, changes $6 \(probe input inversion\) and $19 \(probe input pullup disable\) settings from boolean to bitfield when driver support is available.
+
+* Added a few new default values for $-settings in _config.h_, overridable from the compiler command line.
+
+* Added core support for per axis pulloff distance, needs plugin for configuring them.
+
+* Added HAL flags for disabling settings for MCU input pins pullup disable, may be set by drivers/boards that has buffered \(optocoupled\) inputs that is not possible to change.
+
+Plugins:
+
+* Spindle: fixed some naming inconsistencies.
+
+* Misc: added plugin for feed rate overrides via Marlin style M-code and plugin for configuring per axis homing pulloff distance.
+
+---
+
+<a name="20241110">Build 20241110
+
+Core:
+
+* Added generic passthru support for programming external MCU via USB > UART bridge. Requires driver support if to be used. Adds `$PTRGH` system command when available.
+
+Plugins:
+
+* Misc, ESP-AT: general improvements.
+
+---
+
+<a name="20241107">Build 20241107
+
+Core:
+
+* Removed deprecated stream flags, added stream event for line state \(RTS, DTR\) changes - initially for USB streams.
+
+Drivers:
+
+* Many: updated for removal of deprecated stream flags in the core.
+
+* STM32 drivers: added support for line state changed event.
+
+Plugins:
+
+* Trinamic: fix for incorrect min/max stepper current validation for TMC2130 and TMC2209. Ref. STM32F4xx [issue #197](https://github.com/grblHAL/STM32F4xx/issues/197).
+
+* Networking: updated WebSocket daemon for removal of deprecated stream flags in the core.
+
+---
+
+<a name="20241030">20241030
+
+Core:
+
+* Added init call for new ESP-AT plugin.
+
+Plugins:
+
+* Motors: fixed incorrect settings reference. Ref. [discussion #107](https://github.com/grblHAL/ESP32/discussions/107).
+
+* Misc. plugins, esp_at: added experimental support for Telnet over WiFi via an ESP32 running [ESP-AT](https://docs.espressif.com/projects/esp-at/en/latest/esp32/Get_Started/index.html).
+
+---
+
+<a name="20241025">Build 20241025
+
+Core:
+
+* Changed `_vminor` named parameter to return build date in YYMMDD format, previously value was 0.
+
+* Added support for LinuxCNC style `(ABORT,<msg>)` comment, requires expressions enabled.
+Terminates gcode program, outputs message and returns error 253.
+
+* Added `PRM[<setting>]` and `PRM[<setting>,<bit>]` functions to expressions, returns $-setting value or value of bit in integer type setting.
+
+* "hardened" flow control code, fixed bug in `repeat...continue` handling.
+
+* Changed signature of `grbl.on_gcode_comment` event, now returns status code.
+
+Drivers:
+
+* ESP32, RP2040: changed NVS storage for settings in flash from 2 to 4KB.
+
+* STM32F4xx: fixed typos.
+
+* Some: added note to _platformio.ino_ file.
+
+Plugins:
+
+* SD Card, macros: fixed G65P1 settings read macro, failed when reading some indexed settings.
+
+---
+
 <a name="20241023">Build 20241023
 
 Core:
 
 * Fixed some odd bugs in NGC flow control, prepared for file based named O-call subroutines.
 
-* Fixed incorrect comment string passed to passed to `grbl.on_gcode_comment` event.
+* Fixed incorrect comment string passed to `grbl.on_gcode_comment` event.
 
 * Added generic redirector for temporarily changing input stream to read from a file. Supports nesting.
 
 Drivers:
 
-*ESP32: fix for overriding UART0 pins, reverted  and fixed tests for ESP32-S3 conditional code.
+* ESP32: fix for overriding UART0 pins, reverted  and fixed tests for ESP32-S3 conditional code.
 
 Plugins:
 
-* File system macros: updated to use new input stream redirector, allows nesting of `G65` calls
+* SD Card, macros: updated to use new input stream redirector, allows nesting of `G65` calls
  \(max 5 levels depending on available memory\). __NOTE:__ Not extensively tested, feedback required.
 
 * SD card: updated to work alongside new file redirector.

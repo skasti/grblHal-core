@@ -118,7 +118,7 @@ typedef void (*on_reset_ptr)(void);
 typedef void (*on_jog_cancel_ptr)(sys_state_t state);
 typedef bool (*on_spindle_select_ptr)(spindle_ptrs_t *spindle);
 typedef void (*on_spindle_selected_ptr)(spindle_ptrs_t *spindle);
-typedef void (*on_gcode_message_ptr)(char *msg);
+typedef status_code_t (*on_gcode_message_ptr)(char *msg);
 typedef void (*on_rt_reports_added_ptr)(report_tracking_flags_t report);
 typedef const char *(*on_set_axis_setting_unit_ptr)(setting_id_t setting_id, uint_fast8_t axis_idx);
 typedef status_code_t (*on_file_open_ptr)(const char *fname, vfs_file_t *handle, bool stream);
@@ -132,6 +132,8 @@ typedef void (*on_macro_return_ptr)(void);
 typedef bool (*write_tool_data_ptr)(tool_data_t *tool_data);
 typedef bool (*read_tool_data_ptr)(tool_id_t tool_id, tool_data_t *tool_data);
 typedef bool (*clear_tool_data_ptr)(void);
+
+typedef char* (*on_string_substitution_ptr)(char* input, char** output);
 
 typedef struct {
     uint32_t n_tools;
@@ -244,6 +246,7 @@ typedef struct {
     on_set_axis_setting_unit_ptr on_set_axis_setting_unit;
     on_gcode_message_ptr on_gcode_message;              //!< Called on output of message parsed from gcode. NOTE: string pointed to is freed after this call.
     on_gcode_message_ptr on_gcode_comment;              //!< Called when a plain gcode comment has been parsed.
+    on_string_substitution_ptr on_string_substitution;  //!< Called when something wants to process a string for param substitution or similar.
     on_tool_selected_ptr on_tool_selected;              //!< Called prior to executing M6 or after executing M61.
     on_tool_changed_ptr on_tool_changed;                //!< Called after executing M6 or M61.
     on_toolchange_ack_ptr on_toolchange_ack;            //!< Called from interrupt context.

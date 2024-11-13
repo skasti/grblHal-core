@@ -43,6 +43,10 @@
 #endif
 #endif
 
+#if STRING_REGISTERS_ENABLE
+#include "string_registers.h"
+#endif
+
 // NOTE: Max line number is defined by the g-code standard to be 99999. It seems to be an
 // arbitrary value, and some GUIs may require more. So we increased it based on a max safe
 // value when converting a float (7.2 digit precision) to an integer.
@@ -348,6 +352,10 @@ void gc_init (void)
 
 #if NGC_EXPRESSIONS_ENABLE
     ngc_flowctrl_init();
+    #if STRING_REGISTERS_ENABLE
+    string_registers_init();
+    #endif
+    ngc_expr_init();
 #endif
 #if NGC_PARAMETERS_ENABLE
     ngc_modal_state_invalidate();
@@ -557,7 +565,7 @@ bool gc_modal_state_restore (gc_modal_t *copy)
 // If the driver handles message comments then the first is extracted and returned in a dynamically
 // allocated memory block, the caller must free this after the message has been processed.
 
-char *gc_normalize_block (char *block, char **message)
+char *gc_normalize_block (char *block, status_code_t *status, char **message)
 {
     char c, *s1, *s2, *comment = NULL;
 
@@ -599,21 +607,19 @@ char *gc_normalize_block (char *block, char **message)
                         if(message && *message == NULL) {
 #if NGC_EXPRESSIONS_ENABLE
                             if(!strncasecmp(comment, "DEBUG,", 6)) { // Debug message string substitution
-                                if(settings.flags.ngc_debug_out) {
+                                if(settings.flags.ngc_debug_out && grbl.on_string_substitution) {
                                     comment += 6;
-                                    ngc_substitute_parameters(comment, message);
+                                    grbl.on_string_substitution(comment, message);
                                 }
                                 *comment = '\0'; // Do not generate grbl.on_gcode_comment event!
                             } else if(!strncasecmp(comment, "PRINT,", 6)) { // Print message string substitution
-                                comment += 6;
-                                ngc_substitute_parameters(comment, message);
-                                *comment = '\0'; // Do not generate grbl.on_gcode_comment event!
-                            } else if(!strncasecmp(comment, "MSG,", 4)) {
-                                    comment += 4;
-                                    ngc_substitute_parameters(comment, message);
+                                if(grbl.on_string_substitution) {
+                                    comment += 6;
+                                    grbl.on_string_substitution(comment, message);
                                 }
-                            }
-#else
+                                *comment = '\0'; // Do not generate grbl.on_gcode_comment event!
+                            } else {
+#endif
                             size_t len = s1 - comment - 3;
 
                             if(!strncasecmp(comment, "MSG,", 4) && (*message = malloc(len))) {
@@ -625,12 +631,13 @@ char *gc_normalize_block (char *block, char **message)
                                 }
                                 memcpy(*message, comment, len);
                             }
-                        }
+#if NGC_EXPRESSIONS_ENABLE
+                            }
 #endif
+                        }
                     }
-
                     if(*comment && *message == NULL && grbl.on_gcode_comment)
-                        grbl.on_gcode_comment(comment);
+                        *status = grbl.on_gcode_comment(comment);
                 }
                 comment = NULL;
                 break;
@@ -773,6 +780,7 @@ status_code_t gc_execute_block (char *block)
 #endif
 
     char *message = NULL;
+    status_code_t status = Status_OK;
     struct {
         float f;
         uint32_t o;
@@ -780,12 +788,15 @@ status_code_t gc_execute_block (char *block)
         tool_id_t t;
     } single_meaning_value = {0};
 
-    block = gc_normalize_block(block, &message);
+    block = gc_normalize_block(block, &status, &message);
+
+    if(status != Status_OK)
+        FAIL(status);
 
     if(block[0] == '\0') {
         if(message)
             gc_output_message(message);
-        return Status_OK;
+        return status;
     }
 
     // Determine if the line is a program start/end marker.
